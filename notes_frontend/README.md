@@ -1,82 +1,88 @@
-# Lightweight React Template for KAVIA
+# Notes Frontend (React + Supabase)
 
-This project provides a minimal React template with a clean, modern UI and minimal dependencies.
+A minimalistic, light-themed notes application with a clean two-panel layout. The left sidebar lists/searches notes and allows creating new notes. The main panel lets you view, edit, and delete selected notes. Notes are stored in Supabase.
 
 ## Features
 
-- **Lightweight**: No heavy UI frameworks - uses only vanilla CSS and React
-- **Modern UI**: Clean, responsive design with KAVIA brand styling
-- **Fast**: Minimal dependencies for quick loading times
-- **Simple**: Easy to understand and modify
+- Create new note
+- Edit existing note (title and content)
+- Delete note (with confirmation)
+- Search notes by title or content (case-insensitive)
+- View all notes ordered by last updated
+- Minimalist, responsive two-panel layout
+- Light theme with brand colors:
+  - Primary: `#1976d2`
+  - Secondary: `#424242`
+  - Accent: `#ffab00`
 
 ## Getting Started
 
-In the project directory, you can run:
+1) Install dependencies
 
-### `npm start`
-
-Runs the app in development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
-
-### `npm test`
-
-Launches the test runner in interactive watch mode.
-
-### `npm run build`
-
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
-
-## Customization
-
-### Colors
-
-The main brand colors are defined as CSS variables in `src/App.css`:
-
-```css
-:root {
-  --kavia-orange: #E87A41;
-  --kavia-dark: #1A1A1A;
-  --text-color: #ffffff;
-  --text-secondary: rgba(255, 255, 255, 0.7);
-  --border-color: rgba(255, 255, 255, 0.1);
-}
+```
+cd simple-notes-manager-7125-7143/notes_frontend
+npm install
 ```
 
-### Components
+2) Configure environment variables
 
-This template uses pure HTML/CSS components instead of a UI framework. You can find component styles in `src/App.css`. 
+Copy `.env.example` to `.env` and set your Supabase credentials:
 
-Common components include:
-- Buttons (`.btn`, `.btn-large`)
-- Container (`.container`)
-- Navigation (`.navbar`)
-- Typography (`.title`, `.subtitle`, `.description`)
+```
+REACT_APP_SUPABASE_URL=https://YOUR-PROJECT-REF.supabase.co
+REACT_APP_SUPABASE_KEY=YOUR_ANON_PUBLIC_API_KEY
+```
 
-## Learn More
+3) Run the app
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+npm start
+```
 
-### Code Splitting
+App runs at http://localhost:3000
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+## Supabase Setup
 
-### Analyzing the Bundle Size
+- Create a project at https://supabase.com
+- Add the `notes` table using the SQL in `assets/supabase.md`
+- For a quick demo, you can disable RLS or add permissive policies (see `assets/supabase.md`). Do not use permissive policies for production.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+Expected table schema:
 
-### Making a Progressive Web App
+```
+notes (
+  id uuid primary key default gen_random_uuid(),
+  title text not null default 'Untitled',
+  content text not null default '',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+)
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+## Project Structure
 
-### Advanced Configuration
+```
+src/
+  components/
+    Editor.js        # Main editor/view panel
+    Sidebar.js       # Sidebar with search, list, and "New Note"
+  services/
+    notesService.js  # CRUD + search; Supabase operations
+  supabaseClient.js  # Supabase client initialization
+  App.js             # Root two-panel UI
+  App.css            # Minimalist light theme and layout
+  index.js
+  index.css
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Notes on Configuration
 
-### Deployment
+- This app uses Create React App; environment variables must start with `REACT_APP_`.
+- If Supabase is not configured, a banner will appear in the UI. CRUD operations require valid Supabase setup.
+- The UI automatically refreshes notes after actions and sorts by `updated_at` desc.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Scripts
 
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+- `npm start` - Run development server
+- `npm run build` - Build production bundle
+- `npm test` - Run tests
